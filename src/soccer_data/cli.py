@@ -39,7 +39,7 @@ def main():
     else:
         import pandas as pd
         transfers = pd.read_excel(args.transfers)
-    merged = NotebookMerge(config).merge(matches, results, transfers)
+    merged = DatasetMerge(config).merge(matches, results, transfers)
     target = Path(args.output)
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.suffix.lower() == '.csv': merged.to_csv(target, index=False)
