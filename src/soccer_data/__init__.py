@@ -1,1 +1,1 @@
-from .pipeline import Config, SourceData, NotebookMerge
+from .pipeline import Config, SourceData, DatasetMerge
