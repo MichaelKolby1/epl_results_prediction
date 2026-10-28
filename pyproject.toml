@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "soccer-data-merge-pipeline"
+version = "0.2.0"
+description = "Notebook-faithful soccer team-season data merging (pre-modeling stage)"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24", "pandas>=2.0", "openpyxl>=3.1"]
+
+[project.optional-dependencies]
+download = ["understatapi>=0.6"]
+test = ["pytest>=8"]
+
+[project.scripts]
+soccer-data-merge = "soccer_data.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
