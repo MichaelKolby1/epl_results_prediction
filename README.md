@@ -39,12 +39,15 @@ epl_results_prediction/
 ├── pyproject.toml
 ├── .gitignore
 ├── src/
-│   ├── __init__.py
-│   ├── pipeline.py           # Configuration, data inputs, cleaning and merging
-│   └── cli.py                # Command-line execution
+│   └── soccer_data/
+│       ├── __init__.py
+│       ├── pipeline.py       # Configuration, data inputs, cleaning and merging
+│       └── cli.py            # Command-line execution
 ├── notebooks/                # Supplementary exploration and data inspection
 ├── data/
-│   ├── raw/                  # Local source workbooks
+│   ├── raw/                  # Included EPL source workbooks
+│   │   ├── epl_match_data.xlsx
+│   │   ├── epl_transfer_data.xlsx
 │   │   └── external/         # Manually downloaded season transfer CSVs
 │   ├── reference/            # Reference output for checking reproducibility
 │   └── processed/            # Optional processed exports
@@ -53,7 +56,7 @@ epl_results_prediction/
     └── test_reference.py     # Reference comparison and configuration tests
 ```
 
-**Note:** The downloadable review package contains local EPL data files. Raw third-party data are ignored by Git; they will not automatically appear in a GitHub clone. Check permissions before redistributing original files or merged data that include third-party records.
+**Note:** The EPL source workbooks are included in the repository for Workflow A. Check the upstream data sources’ reuse terms before redistributing third-party data.
 
 ## Data pipeline
 
@@ -78,18 +81,18 @@ python -m venv .venv
 python -m pip install -e ".[download,test]"
 ```
 
-Run commands from the repository root. The installed `soccer-data-merge` command requires the package layout and entry point in `pyproject.toml` to agree; the configuration in this README assumes `src/soccer_data/`. To see the available arguments, run `soccer-data-merge --help`.
+Run commands from the repository root. To see the available pipeline arguments, run `soccer-data-merge --help`.
 
 ### Workflow A — Use the existing EPL datasets
 
-1. Place the prepared files in `data/raw/`:
+1. Confirm the included EPL input files are present:
 
    ```text
    data/raw/epl_match_data.xlsx
    data/raw/epl_transfer_data.xlsx
    ```
 
-   These files may not be included in a GitHub clone; copy them from the project data shared with your team. The match workbook must contain `Match Data` and `Season Results Data` sheets.
+   The files are provided with the repository; no additional download is needed for this workflow.
 
 2. Run:
 
@@ -97,7 +100,7 @@ Run commands from the repository root. The installed `soccer-data-merge` command
    soccer-data-merge --matches data/raw/epl_match_data.xlsx --transfers data/raw/epl_transfer_data.xlsx --league EPL --transfer-league "Premier League" --start-year 2015 --end-year 2025 --previous-matches 10 --current-matches 10 --output outputs/epl_merged_data.xlsx
    ```
 
-3. Find the resulting workbook at `outputs/epl_merged_data.xlsx` (**200 rows, 49 columns** for the original data snapshot). To run the reference tests, also place the original merged workbook at `data/reference/epl_merged_data.xlsx`, then run:
+3. Find the generated workbook at `outputs/epl_merged_data.xlsx` (**200 rows, 49 columns** for the original data snapshot). To run the tests, ensure the reference workbook is present at `data/reference/epl_merged_data.xlsx`, then run:
 
    ```powershell
    python -m pytest -q
@@ -152,9 +155,7 @@ Provide one primary input option per source. If both are supplied, `--download-m
 - **League and year availability:** Understat and the transfer-data collection do not necessarily offer the same leagues or years. Missing source seasons can limit the usable period.
 - **Transfer-data missingness:** reported transfer fees and player market valuations are sometimes unavailable. In the original EPL collection, approximately **6.77% of transfer fees** and **4.09% of player market values** are missing; these should not automatically be interpreted as zero.
 - **Names and identifiers:** club names may differ across Understat and transfer records. Unresolved name differences can result in unmatched transfer features.
-- **Timing of information:** final points are included as an outcome for historical analysis. Future modeling must restrict features to information observable by the prediction point (after Match 10) to avoid leakage.
 - **Promoted clubs:** clubs without Premier League results from the preceding season lack directly comparable previous-season top-flight performance. The standard EPL preparation uses league averages for missing prior-season measures.
-- **Match sequence:** early/late match-window statistics depend on the chronological ordering of team-match records, which should be checked for each new source.
 - **Official points adjustments:** final standings points can differ from points totaled from match outcomes because of disciplinary deductions or other adjustments. The pipeline uses the provided season-results data for final points.
 - **Source updates and coverage quality:** third-party corrections, scraping gaps, incomplete seasons, and changing upstream formats may affect newly retrieved records and reproducibility.
 
