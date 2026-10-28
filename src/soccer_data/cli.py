@@ -2,7 +2,7 @@
 import argparse
 import json
 from pathlib import Path
-from .pipeline import Config, SourceData, NotebookMerge
+from .pipeline import Config, SourceData, DatasetMerge
 
 
 def main():
