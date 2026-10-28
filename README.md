@@ -39,10 +39,9 @@ epl_results_prediction/
 ├── pyproject.toml
 ├── .gitignore
 ├── src/
-│   └── soccer_data/
-│       ├── __init__.py
-│       ├── pipeline.py        # Configuration, data inputs, cleaning and merging
-│       └── cli.py             # Command-line execution
+│   ├── __init__.py
+│   ├── pipeline.py           # Configuration, data inputs, cleaning and merging
+│   └── cli.py                # Command-line execution
 ├── notebooks/                # Supplementary exploration and data inspection
 ├── data/
 │   ├── raw/                  # Local source workbooks
