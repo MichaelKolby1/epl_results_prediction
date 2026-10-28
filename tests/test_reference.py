@@ -2,7 +2,7 @@
 from pathlib import Path
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from soccer_data import Config, SourceData, NotebookMerge
+from soccer_data import Config, SourceData, DatasetMerge
 
 BASE = Path(__file__).resolve().parents[1]
 
