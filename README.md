@@ -55,36 +55,6 @@ epl_results_prediction/
 
 **Note:** The downloadable review package contains local EPL data files. Raw third-party data are ignored by Git; they will not automatically appear in a GitHub clone. Check permissions before redistributing original files or merged data that include third-party records.
 
-## Installation
-
-Requires Python **3.10+**. In the repository's root directory:
-
-```bash
-python -m venv .venv
-```
-
-Activate the environment:
-
-```bash
-# macOS / Linux
-source .venv/bin/activate
-
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-```
-
-Install the project and test dependencies:
-
-```bash
-python -m pip install -e '.[test]'
-```
-
-If you plan to download Understat data directly, also install the download dependencies:
-
-```bash
-python -m pip install -e '.[download]'
-```
-
 ## Data pipeline
 
 The pipeline follows the same steps regardless of where the input files originate:
@@ -96,85 +66,65 @@ The pipeline follows the same steps regardless of where the input files originat
 5. **Standardize and merge:** reconcile club names across sources and join the match, transfer, and final-season results information by team and season.
 6. **Export and check:** write the merged `.xlsx` or `.csv` file and optionally run the automated reference tests.
 
-For a different league or data source, confirm match ordering, matching team identifiers, season conventions, and input schema before interpreting the output.
+### Installation (both workflows)
 
-## Workflow A: Reproduce the EPL dataset from existing files
+From a Windows PowerShell terminal (for example, in VS Code):
 
-Place the prepared files at:
-
-```text
-data/raw/epl_match_data.xlsx
-data/raw/epl_transfer_data.xlsx
+```powershell
+git clone https://github.com/MichaelKolby1/epl_results_prediction.git
+cd epl_results_prediction
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e ".[download,test]"
 ```
 
-From the project root, run:
+Run commands from the repository root. The installed `soccer-data-merge` command requires the package layout and entry point in `pyproject.toml` to agree; the configuration in this README assumes `src/soccer_data/`. To see the available arguments, run `soccer-data-merge --help`.
 
-```bash
-soccer-data-merge \
-  --matches data/raw/epl_match_data.xlsx \
-  --transfers data/raw/epl_transfer_data.xlsx \
-  --league EPL \
-  --transfer-league 'Premier League' \
-  --start-year 2015 --end-year 2025 \
-  --previous-matches 10 --current-matches 10 \
-  --output outputs/epl_merged_data.xlsx
+### Workflow A — Use the existing EPL datasets
+
+1. Place the prepared files in `data/raw/`:
+
+   ```text
+   data/raw/epl_match_data.xlsx
+   data/raw/epl_transfer_data.xlsx
+   ```
+
+   These files may not be included in a GitHub clone; copy them from the project data shared with your team. The match workbook must contain `Match Data` and `Season Results Data` sheets.
+
+2. Run:
+
+   ```powershell
+   soccer-data-merge --matches data/raw/epl_match_data.xlsx --transfers data/raw/epl_transfer_data.xlsx --league EPL --transfer-league "Premier League" --start-year 2015 --end-year 2025 --previous-matches 10 --current-matches 10 --output outputs/epl_merged_data.xlsx
+   ```
+
+3. Find the resulting workbook at `outputs/epl_merged_data.xlsx` (**200 rows, 49 columns** for the original data snapshot). To run the reference tests, also place the original merged workbook at `data/reference/epl_merged_data.xlsx`, then run:
+
+   ```powershell
+   python -m pytest -q
+   ```
+
+To test another EPL time frame without downloading more data, change the start/end years and output filename. For example:
+
+```powershell
+soccer-data-merge --matches data/raw/epl_match_data.xlsx --transfers data/raw/epl_transfer_data.xlsx --league EPL --transfer-league "Premier League" --start-year 2018 --end-year 2022 --previous-matches 10 --current-matches 10 --output outputs/epl_2018_2022.xlsx
 ```
 
-Expected for the provided EPL reference configuration: **200 rows and 49 columns**, representing seasons 2016/17–2025/26.
+### Workflow B — Use newly collected data
 
-To compare the output against the included reference dataset, run:
+1. Download one `YYYY.csv` transfer file per season from the appropriate league directory in [eordo/transfermarkt-data](https://github.com/eordo/transfermarkt-data). Put the files in `data/raw/external/` (for example, `2020.csv` through `2023.csv` for input seasons 2020–2023). Check the `league` field in the CSVs for the exact label to supply to `--transfer-league`.
 
-```bash
-pytest -q
-```
+2. Download Understat match data *and* merge the transfer CSVs in one command. For example, for La Liga:
 
-The reference test checks team-season observations, column names and ordering, and values within a tight numerical tolerance. This workflow has been tested against the supplied EPL data snapshot.
+   ```powershell
+   soccer-data-merge --download-matches --league La_liga --transfer-csv-dir data/raw/external --transfer-league "La Liga" --start-year 2020 --end-year 2023 --previous-matches 10 --current-matches 10 --output outputs/laliga_2020_2023.xlsx
+   ```
 
-## Workflow B: Prepare data for another league or season range
+   Replace the league ID, transfer-league label, and years with those available in your source data. Use `--club-map PATH` if club names differ across sources. The pipeline does **not** download transfer CSVs automatically.
 
-### 1. Obtain transfer records
+3. Inspect the generated file in `outputs/`, checking seasons, club names, and missing values. Other leagues and fresh downloads have not been fully verified against a reference output.
 
-Visit [eordo/transfermarkt-data](https://github.com/eordo/transfermarkt-data), select the relevant league directory, and download the individual annual CSV files for your chosen seasons. Follow the source repository's season naming: a file named `2022.csv` denotes the **2022/23 season** where that convention applies.
+If you already have a compatible match workbook, use `--matches PATH` instead of `--download-matches`. If you already have a prepared transfer workbook, use `--transfers PATH` instead of `--transfer-csv-dir`.
 
-Save the CSVs together as `YYYY.csv`, for example:
-
-```text
-data/raw/external/
-├── 2020.csv
-├── 2021.csv
-├── 2022.csv
-└── 2023.csv
-```
-
-Use the actual league name in the CSV's `league` field for `--transfer-league`. Availability and years covered vary across leagues. The pipeline **does not scrape Transfermarkt or automatically download these transfer CSVs**.
-
-### 2. Supply match records
-
-Choose one of the following:
-
-- **Existing data:** supply a compatible Excel workbook containing the worksheets `Match Data` and `Season Results Data` with the expected columns.
-- **Direct acquisition:** use `--download-matches` together with the Understat league identifier, such as `La_liga`, and your desired start/end years.
-
-### 3. Run the merge
-
-Example using newly acquired match data and locally downloaded La Liga transfer CSVs:
-
-```bash
-soccer-data-merge \
-  --download-matches \
-  --league La_liga \
-  --transfer-csv-dir data/raw/external \
-  --transfer-league 'LaLiga' \
-  --start-year 2020 --end-year 2023 \
-  --previous-matches 10 --current-matches 10 \
-  --output outputs/la_liga_merged.xlsx
-```
-
-Alternatively, replace `--download-matches` with `--matches PATH` to use a previously downloaded match workbook. For variations in club naming, provide an optional JSON mapping via `--club-map PATH`:
-
-```json
-{"Transfer-source club name": "Match-source club name"}
-```
 
 **Validation status:** the standard EPL reference workflow has been tested. Direct-download behavior and complete cross-league reproduction depend on third-party availability, source schema, and club-name mappings; they have not been fully validated for every alternative league and year range.
 
