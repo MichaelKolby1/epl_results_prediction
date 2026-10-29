@@ -151,7 +151,6 @@ Provide one primary input option per source. If both are supplied, `--download-m
 
 ## Dataset limitations and considerations
 
-- **Small analytical sample:** each team-season is one observation. EPL coverage provides 20 clubs per season; repeated clubs across seasons are not statistically independent.
 - **League and year availability:** Understat and the transfer-data collection do not necessarily offer the same leagues or years. Missing source seasons can limit the usable period.
 - **Transfer-data missingness:** reported transfer fees and player market valuations are sometimes unavailable. In the original EPL collection, approximately **6.77% of transfer fees** and **4.09% of player market values** are missing; these should not automatically be interpreted as zero.
 - **Names and identifiers:** club names may differ across Understat and transfer records. Unresolved name differences can result in unmatched transfer features.
