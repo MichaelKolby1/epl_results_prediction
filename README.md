@@ -77,7 +77,6 @@ From a Windows PowerShell terminal (for example, in VS Code):
 git clone https://github.com/MichaelKolby1/epl_results_prediction.git
 cd epl_results_prediction
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[download,test]"
 ```
 
