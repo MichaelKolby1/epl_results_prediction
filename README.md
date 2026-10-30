@@ -44,6 +44,7 @@ epl_results_prediction/
 │       ├── pipeline.py       # Configuration, data inputs, cleaning and merging
 │       └── cli.py            # Command-line execution
 ├── notebooks/                # Supplementary exploration and data inspection
+|   ├── README.md
 │   ├── match_data_download.ipynb
 │   ├── transfer_data_download.ipynb
 │   ├── file_merge.ipynb
