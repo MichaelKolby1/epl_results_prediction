@@ -44,6 +44,12 @@ epl_results_prediction/
 │       ├── pipeline.py       # Configuration, data inputs, cleaning and merging
 │       └── cli.py            # Command-line execution
 ├── notebooks/                # Supplementary exploration and data inspection
+│   ├── match_data_download.ipynb
+│   ├── transfer_data_download.ipynb
+│   ├── file_merge.ipynb
+│   ├── milestone1_EDA.ipynb
+│   ├── milestone2_EDA.ipynb
+│   └── baseline_evaluation.ipynb
 ├── data/
 │   ├── raw/                  # Included EPL source workbooks
 │   │   ├── epl_match_data.xlsx
@@ -159,8 +165,7 @@ Provide one primary input option per source. If both are supplied, `--download-m
 
 ## Next stage: predictive modeling
 
-Once the combined dataset is finalized and checked, the broader project will develop and compare models to predict final EPL points. Planned evaluation will use time-ordered training and testing, a baseline predictor, and error measures such as mean squared error (MSE). The present repository is deliberately limited to the data preparation and analysis stage.
-
+Milestone 2 established a reproducible dataset, exploratory findings, and preliminary baseline results. Milestone 3 will investigate multiple regression models incorporating early-season performance, promotion status, and potentially transfer activity. We will also explore Bradley–Terry models for estimating relative team strengths from head-to-head results. These approaches will be compared with the existing baseline using chronological evaluation, MSE, MAD, and residual diagnostics, with particular attention to newly promoted teams.
 ## Attribution
 
 - Match and performance statistics: [Understat](https://understat.com/), accessed through `understatapi` or prepared workbooks.
