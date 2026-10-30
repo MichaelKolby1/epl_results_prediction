@@ -1,6 +1,6 @@
 # EPL Results Prediction
 
-**Current project stage: Data acquisition, exploratory analysis, preparation, and integration.** This repository currently implements the data pipeline needed for the broader EPL results prediction project. It produces a structured team-season dataset for subsequent statistical analysis and modeling; **it does not yet train, tune, or evaluate prediction models**.
+**Current project stage:** Data acquisition, preparation, exploratory data analysis, and baseline modeling (Milestone 2). This repository implements a reproducible workflow for integrating Premier League match and transfer data, exploring relationships with final-season points, and evaluating simple baseline predictions. More advanced regression and team-strength modeling are planned for Milestone 3.
 
 ## Project overview and goals
 
@@ -12,15 +12,15 @@ The overall goals are to:
 
 1. Combine match statistics and transfer activity into an analysis-ready team-season dataset.
 2. Examine the relationships between historical performance, early-season results, team resources, and final points.
-3. In a subsequent stage, evaluate whether these characteristics improve predictions of final points compared with simple baselines, using chronological validation to avoid future-information leakage.
+3. Evaluate predictive performance against simple baselines using chronological validation, then investigate whether additional performance and transfer features improve prediction accuracy.
 
 Although the project focuses on the English Premier League (EPL), the data-preparation pipeline accepts configurable seasons, match windows, and compatible input data from other leagues.
 
 ## Scope of this repository
 
-The **current stage** covers sourcing the data, checking and cleaning input fields, constructing team-level summaries, joining the datasets, and producing a consistent final table for analysis. Model selection, training, cross-validation, predictions, and model comparisons are **future work** during the semester.
+The repository covers data collection, cleaning, feature engineering, dataset integration, exploratory analysis, and baseline evaluation. The standard EPL configuration uses data from 2015/16–2025/26, reserving the first season for historical context and producing 200 club-season observations across 2016/17–2025/26, with 49 columns.
 
-The standard EPL run covers input seasons **2015/16–2025/26**, using 2015/16 for prior-season context and generating **200 team-season observations across 2016/17–2025/26**. The output contains **49 columns** in the reference configuration. The 2025/26 final-points field comes from the supplied historical data snapshot; verify the completeness of any source season before using it as a model target.
+Exploratory analysis examines promotion status, early-season points, and transfer spending. Baseline evaluation compares previous-season points with a training-mean reference using chronological testing. Multiple regression and Bradley–Terry modeling remain future work.
 
 ## Data sources
 
